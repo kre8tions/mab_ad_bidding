@@ -1,24 +1,27 @@
 import numpy as np
 
+# src/data_generator.py
+import numpy as np
+
 def generate_ad_slots():
-    """Define ad slots with fixed CTRs."""
-    np.random.seed(42)  # For reproducibility
-    ad_slots = {
-        "banner": 0.05,  # 5% CTR
-        "sidebar": 0.02, # 2% CTR
-        "pop-up": 0.08,  # 8% CTR
-        "footer": 0.03   # 3% CTR
-    }
+    ad_slots = {"banner": 0.05, "sidebar": 0.02, "pop-up": 0.08, "footer": 0.03}
     return ad_slots
 
-def simulate_click(slot_ctr):
-    """Simulate a click based on CTR (Bernoulli trial)."""
-    return np.random.binomial(1, slot_ctr)
+def simulate_click(slot_ctr, rng=None):
+    return np.random.binomial(1, slot_ctr) if rng is None else rng.binomial(1, slot_ctr)
 
 if __name__ == "__main__":
-    # Test the functions
     slots = generate_ad_slots()
     print("Ad Slots:", slots)
     for slot, ctr in slots.items():
-        click = simulate_click(ctr)
-        print(f"{slot}: CTR={ctr}, Click={click}")
+        # Run 1000 trials to estimate CTR
+        clicks = [simulate_click(ctr) for _ in range(1000)]
+        simulated_ctr = np.mean(clicks)
+        print(f"{slot}: True CTR={ctr}, Simulated CTR={simulated_ctr:.4f}")
+
+
+# if __name__ == "__main__":
+#     slots = generate_ad_slots()
+#     banner_clicks = [simulate_click(slots["banner"]) for _ in range(31)]
+#     print("Banner clicks (31 trials):", banner_clicks)
+#     print("Average:", np.mean(banner_clicks))
